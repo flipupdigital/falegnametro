@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Falegnametro – Il check-up della tua falegnameria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wood:#8a5a2b; --wood-dark:#5b3a1a; --wood-light:#f4ead9; --cream:#fbf7f0;
+    --ink:#2a1f14; --muted:#7a6a58; --green:#3f7d4e; --amber:#d08a1e; --red:#b6452c;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+  h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0 0 .4em}
+  .brand{display:flex;align-items:center;gap:10px;font-family:Fraunces,serif;font-weight:800;font-size:22px;color:var(--wood-dark);margin-bottom:24px}
+  .brand .logo{width:38px;height:38px;border-radius:10px;background:repeating-linear-gradient(100deg,var(--wood) 0 6px,#9c6a37 6px 9px,var(--wood) 9px 16px);display:grid;place-items:center;color:#fff;font-size:20px}
+  .card{background:#fff;border-radius:var(--radius);padding:28px 24px;box-shadow:0 2px 0 rgba(91,58,26,.06),0 10px 30px rgba(91,58,26,.08)}
+  .hero h1{font-size:clamp(30px,6vw,44px);line-height:1.1;color:var(--wood-dark)}
+  .hero p{color:var(--muted);font-size:17px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
+  .pill{background:var(--wood-light);color:var(--wood-dark);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600}
+  .btn{appearance:none;border:0;cursor:pointer;background:var(--wood);color:#fff;font:600 16px Inter,sans-serif;padding:14px 24px;border-radius:12px;transition:.15s}
+  .btn:hover{background:var(--wood-dark)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--wood-dark);padding:14px 8px}
+  .progress{height:8px;background:var(--wood-light);border-radius:99px;overflow:hidden;margin-bottom:8px}
+  .progress > div{height:100%;background:var(--wood);width:0;transition:width .3s}
+  .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:18px}
+  .area-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--wood);margin-bottom:8px}
+  .q{font-size:21px;font-family:Fraunces,serif;font-weight:600;margin-bottom:20px}
+  .opts{display:grid;gap:10px}
+  .opt{display:block;text-align:left;width:100%;background:var(--cream);border:2px solid transparent;border-radius:12px;padding:14px 16px;font:500 16px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:.12s}
+  .opt:hover{border-color:#d9c4a3}
+  .opt.sel{border-color:var(--wood);background:var(--wood-light)}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+  .hidden{display:none !important}
+  /* results */
+  .score-hero{text-align:center;padding:10px 0 4px}
+  .big{font-family:Fraunces,serif;font-size:72px;font-weight:800;line-height:1;color:var(--wood-dark)}
+  .big small{font-size:24px;color:var(--muted)}
+  .arch{margin:22px 0;background:var(--wood-light);border-radius:var(--radius);padding:20px}
+  .arch .emoji{font-size:40px}
+  .arch h2{font-size:26px;color:var(--wood-dark)}
+  .bars{display:grid;gap:10px;margin-top:10px}
+  .bar-row{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:14px}
+  .bar{height:10px;background:var(--wood-light);border-radius:99px;overflow:hidden}
+  .bar > div{height:100%;border-radius:99px}
+  .prio{border-left:4px solid var(--red);padding:12px 16px;background:#fdf3ef;border-radius:0 12px 12px 0;margin-bottom:12px}
+  .prio h3{font-family:Inter,sans-serif;font-size:16px;margin:0 0 4px}
+  .prio p{margin:0;font-size:15px;color:#5a4636}
+  section + section{margin-top:28px}
+  .radar-box{display:flex;justify-content:center;margin:10px 0}
+  form{display:grid;gap:12px}
+  input[type=text],input[type=email],input[type=tel]{width:100%;padding:13px 14px;border:2px solid #e8dccb;border-radius:10px;font:16px Inter,sans-serif;background:#fff}
+  input:focus{outline:none;border-color:var(--wood)}
+  .check{display:flex;gap:10px;font-size:13px;color:var(--muted);align-items:flex-start}
+  .note{font-size:13px;color:var(--muted)}
+  .ok{background:#eaf4ec;color:var(--green);padding:14px;border-radius:12px;font-weight:600}
+  @media (max-width:520px){.bar-row{grid-template-columns:110px 1fr 34px;font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="logo">🪵</div>Falegnametro</div>
+
+  <!-- INTRO -->
+  <div id="intro" class="card hero">
+    <h1>Quanto è solida la tua falegnameria?</h1>
+    <p>Rispondi a qualche domanda e scopri il tuo <strong>Indice Falegnametro</strong>: un punteggio su 10 aree chiave, il tuo profilo d'impresa e le 3 priorità su cui lavorare subito.</p>
+    <div class="pills">
+      <span class="pill">⏱ 6 minuti</span><span class="pill">📱 Dal telefono</span><span class="pill">🔒 Risposte riservate</span><span class="pill">🎯 Consigli concreti</span>
+    </div>
+    <button class="btn" onclick="start()">Inizia il check-up →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card hidden">
+    <div class="progress"><div id="prog"></div></div>
+    <div class="meta"><span id="counter"></span><span id="areaName"></span></div>
+    <div class="area-tag" id="tag"></div>
+    <div class="q" id="question"></div>
+    <div class="opts" id="options"></div>
+    <div class="nav">
+      <button class="btn ghost" id="backBtn" onclick="back()">← Indietro</button>
+      <span class="note">Scegli la risposta più vicina alla realtà</span>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="hidden">
+    <div class="card">
+      <section class="score-hero">
+        <div class="note">Il tuo Indice Falegnametro</div>
+        <div class="big"><span id="total">0</span><small>/100</small></div>
+        <div class="note" id="totalLabel"></div>
+      </section>
+
+      <section class="arch">
+        <div class="emoji" id="archEmoji"></div>
+        <h2 id="archName"></h2>
+        <p id="archDesc" style="margin:0"></p>
+      </section>
+
+      <section>
+        <h2>La tua mappa</h2>
+        <div class="radar-box" id="radar"></div>
+        <div class="bars" id="bars"></div>
+      </section>
+
+      <section>
+        <h2>Le tue 3 priorità</h2>
+        <div id="prios"></div>
+      </section>
+    </div>
+
+    <div class="card" style="margin-top:20px" id="leadCard">
+      <h2>Ricevi il report completo</h2>
+      <p class="note" style="font-size:15px">Ti mandiamo il report dettagliato con il piano d'azione per le tue 3 priorità e il confronto con le falegnamerie simili alla tua.</p>
+      <form id="leadForm" onsubmit="return sendLead(event)">
+        <input type="text" name="nome" placeholder="Nome e cognome" required>
+        <input type="text" name="azienda" placeholder="Nome della falegnameria" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="tel" name="telefono" placeholder="Telefono (WhatsApp)">
+        <label class="check"><input type="checkbox" required> Acconsento al trattamento dei dati per ricevere il report e essere ricontattato.</label>
+        <button class="btn" type="submit">Mandami il report →</button>
+      </form>
+      <div id="leadOk" class="ok hidden">✅ Fatto! Ti arriverà il report a breve.</div>
+    </div>
+    <p style="text-align:center;margin-top:18px"><button class="btn ghost" onclick="location.reload()">↺ Rifai il test</button></p>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+// Inserisci qui l'URL del webhook GoHighLevel (Automation → Inbound Webhook). Vuoto = i dati vengono solo stampati in console.
+const WEBHOOK_URL = "";
+
+/* ===== DATI ===== */
+const PROFILE = [
+  {id:"dipendenti", q:"Quante persone lavorano in azienda (te compreso)?", o:["Solo io","2–5","6–15","Più di 15"]},
+  {id:"tipo", q:"Qual è il tuo lavoro principale?", o:["Arredo su misura","Cucine","Serramenti / porte","Contract / negozi / hotel"]},
+  {id:"fatturato", q:"Fatturato annuo indicativo?", o:["Meno di 300 mila €","300 mila – 1 milione €","1 – 3 milioni €","Più di 3 milioni €"]},
+];
+
+// ogni opzione vale 0..3 (indice nell'array)
+const AREAS = [
+  {id:"org", name:"Organizzazione", tip:"Introduci una riunione di 15 minuti a inizio settimana con un tabellone delle commesse (anche una lavagna): chi fa cosa, cosa esce, cosa manca.",
+   qs:[
+    {q:"Sai dire oggi quali commesse escono la prossima settimana?", o:["No, si vede giorno per giorno","Più o meno, ce l'ho in testa io","Sì, è scritto su un foglio/lavagna","Sì, c'è una pianificazione condivisa con tutti"]},
+    {q:"Ognuno in laboratorio sa cosa deve fare senza chiedere a te?", o:["No, chiedono sempre a me","Solo i più esperti","Quasi sempre","Sì, ci sono ruoli e responsabilità chiari"]},
+    {q:"Quanto spesso una consegna slitta rispetto alla data promessa?", o:["Quasi sempre","Spesso","Ogni tanto","Raramente"]},
+   ]},
+  {id:"tech", name:"Macchinari", tip:"Fai una mappa delle macchine: età, ore di fermo e lavorazioni fatte a mano. Spesso una CNC o un bordatrice nuova si ripaga in 2–3 anni, e con Transizione 5.0 il conto cambia ancora.",
+   qs:[
+    {q:"Quanti anni ha in media il tuo parco macchine?", o:["Più di 20 anni","10–20 anni","5–10 anni","Meno di 5 anni"]},
+    {q:"Hai una CNC / centro di lavoro?", o:["No, e non ci ho mai pensato","No, ma ci sto pensando","Sì, una","Sì, più di una o una linea automatizzata"]},
+    {q:"Le macchine si fermano per guasti?", o:["Spesso, e ci blocca","Ogni tanto","Raramente","Quasi mai, facciamo manutenzione programmata"]},
+   ]},
+  {id:"digit", name:"Digitalizzazione", tip:"Parti da un solo passo: un software per i disegni che generi distinta e lista di taglio. Elimini errori di misura e risparmi ore di ufficio.",
+   qs:[
+    {q:"Come disegni i progetti?", o:["A mano","Con un CAD generico (es. AutoCAD)","Con un software per arredo","Con software collegato alle macchine (CAD/CAM)"]},
+    {q:"Come gestisci ordini, materiali e magazzino?", o:["A memoria / carta","Excel","In parte con un gestionale","Con un gestionale che uso davvero"]},
+    {q:"Usi strumenti digitali con i clienti (render, firma online, condivisione file)?", o:["No","Raramente","Spesso","Sempre, è parte del metodo"]},
+   ]},
+  {id:"prev", name:"Preventivi", tip:"Calcola il tuo costo orario reale (costi fissi + personale ÷ ore produttive). Senza quel numero ogni preventivo è un'ipotesi e rischi di lavorare in perdita senza saperlo.",
+   qs:[
+    {q:"Sai quanto ti costa un'ora di laboratorio?", o:["No","Ho un'idea","Sì, più o meno","Sì, calcolata e aggiornata"]},
+    {q:"Come fai un preventivo?", o:["A occhio, a esperienza","Materiali + un ricarico","Materiali + ore stimate + ricarico","Con un modello/software che calcola tutto"]},
+    {q:"A fine commessa controlli se hai guadagnato quanto previsto?", o:["Mai","Solo sui lavori grandi","Spesso","Sempre, consuntivo vs preventivo"]},
+   ]},
+  {id:"fin", name:"Finanza", tip:"Fai un semplice cruscotto mensile: costi fissi, incassi previsti nei prossimi 90 giorni, saldo banca. Mezz'ora al mese col commercialista o da solo cambia tutto.",
+   qs:[
+    {q:"Conosci i tuoi costi fissi mensili?", o:["No","Più o meno","Sì, con buona precisione","Sì, e li monitoro ogni mese"]},
+    {q:"Come stai con la liquidità?", o:["Spesso in difficoltà","Ogni tanto tirata","Abbastanza tranquillo","Tranquillo, ho riserve"]},
+    {q:"Chiedi acconti e rispetti i tempi di incasso?", o:["Spesso incasso in ritardo","Acconti a volte","Acconto sempre, saldi a volte in ritardo","Acconti e saldi regolari"]},
+   ]},
+  {id:"hr", name:"Persone", tip:"Rendi visibile il tuo laboratorio come posto dove si lavora bene: foto del team, macchine moderne, percorsi di crescita. I giovani scelgono l'azienda, non solo lo stipendio.",
+   qs:[
+    {q:"Negli ultimi 12 mesi hai cercato personale?", o:["Sì, e non ho trovato nessuno","Sì, con molta fatica","Sì, e ho trovato","Non serviva / arrivano candidature"]},
+    {q:"Offri qualcosa oltre lo stipendio (welfare, premi, formazione)?", o:["No","Qualcosa ogni tanto","Sì, alcune cose","Sì, un piano strutturato"]},
+    {q:"I tuoi collaboratori restano nel tempo?", o:["No, c'è molto ricambio","Qualcuno se ne va","Quasi tutti restano","Sì, squadra stabile"]},
+   ]},
+  {id:"mkt", name:"Marketing", tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
+   qs:[
+    {q:"Hai un sito internet aggiornato con i tuoi lavori?", o:["No","Sì, ma vecchio","Sì, abbastanza aggiornato","Sì, aggiornato e porta contatti"]},
+    {q:"Pubblichi i tuoi lavori sui social?", o:["Mai","Ogni tanto","Almeno una volta al mese","Ogni settimana, con una strategia"]},
+    {q:"Quante recensioni Google hai?", o:["Nessuna / non so","Meno di 10","10–50","Più di 50"]},
+   ]},
+  {id:"sales", name:"Vendite", tip:"Richiama ogni preventivo dopo 3–5 giorni. È l'azione più semplice e redditizia: molti ordini si perdono solo perché nessuno ha richiamato.",
+   qs:[
+    {q:"Su 10 preventivi, quanti diventano ordini?", o:["Non lo so","Meno di 2","2–4","Più di 4"]},
+    {q:"Dopo aver mandato un preventivo, richiami il cliente?", o:["No, aspetto","A volte","Quasi sempre","Sempre, con un metodo"]},
+    {q:"Da dove arrivano i nuovi clienti?", o:["Solo passaparola, quando capita","Passaparola + qualche architetto","Più canali (web, showroom, professionisti)","Canali misurati che porto avanti con costanza"]},
+   ]},
+  {id:"owner", name:"Autonomia dal titolare", tip:"Scegli un'attività che fai solo tu (es. i preventivi o i rilievi) e insegnala a una persona nei prossimi 3 mesi. È il primo passo per avere un'azienda e non solo un lavoro.",
+   qs:[
+    {q:"Se ti fermi un mese, l'azienda va avanti?", o:["No, si ferma tutto","Va avanti a fatica","Sì, con qualche problema","Sì, tranquillamente"]},
+    {q:"Chi fa preventivi e rilievi?", o:["Solo io","Io, con un po' di aiuto","Io e un'altra persona","Una persona/ufficio dedicato"]},
+    {q:"Hai pensato a chi porterà avanti l'azienda in futuro?", o:["No","Ci penso ma non ho un piano","C'è qualcuno in vista","Sì, c'è un piano"]},
+   ]},
+  {id:"clients", name:"Clienti e mercato", tip:"Se un cliente pesa troppo, sei vulnerabile. Punta a costruire una seconda fonte di lavoro (es. architetti o contract) per non dipendere da pochi nomi.",
+   qs:[
+    {q:"Il tuo cliente più importante quanto pesa sul fatturato?", o:["Più del 50%","30–50%","10–30%","Meno del 10%"]},
+    {q:"Sai qual è il tipo di lavoro su cui guadagni di più?", o:["No","Ho un'idea","Sì","Sì, e cerco attivamente quel tipo di lavoro"]},
+    {q:"Hai un portafoglio ordini per i prossimi mesi?", o:["Meno di 1 mese","1–2 mesi","3–4 mesi","Più di 4 mesi"]},
+   ]},
+];
+
+const ARCHETYPES = {
+  top:     {emoji:"🧭", name:"L'Imprenditore del Legno", desc:"La tua falegnameria è equilibrata: produci bene, conosci i numeri e sai farti trovare. Ora la sfida è crescere senza perdere qualità."},
+  restart: {emoji:"🔧", name:"La Bottega da Rilanciare", desc:"Il mestiere c'è, ma l'azienda attorno fatica. La buona notizia: con pochi interventi mirati il miglioramento si vede in fretta."},
+  craft:   {emoji:"🪚", name:"L'Artigiano Puro", desc:"Le mani sono d'oro e il lavoro esce bene, ma numeri e comunicazione restano indietro. Rischi di lavorare tanto e guadagnare meno di quanto meriti."},
+  ind:     {emoji:"🏭", name:"L'Industriale", desc:"Macchine e processi sono il tuo punto forte. Quello che manca è farlo sapere: il mercato non conosce ancora il valore che sai produrre."},
+  shop:    {emoji:"📣", name:"Il Vetrinista", desc:"Sai farti vedere e i clienti arrivano. Ma sotto il cofano i numeri non sono sotto controllo: attenzione ai margini."},
+  acct:    {emoji:"📊", name:"Il Ragioniere della Bottega", desc:"Conti in ordine e preventivi precisi. Ora serve portare più lavoro buono: marketing e vendite sono la tua leva di crescita."},
+  team:    {emoji:"🤝", name:"Il Capobottega", desc:"Hai costruito una squadra solida che va avanti anche senza di te. Ottima base per investire su tecnologia e mercato."},
+};
+
+/* ===== STATO ===== */
+const steps = [
+  ...PROFILE.map(p => ({type:"profile", id:p.id, area:"Profilo", q:p.q, o:p.o})),
+  ...AREAS.flatMap(a => a.qs.map((qq,i) => ({type:"area", id:a.id+"_"+i, areaId:a.id, area:a.name, q:qq.q, o:qq.o}))),
+];
+const answers = {};
+let cur = 0;
+let results = null;
+
+const $ = id => document.getElementById(id);
+
+function start(){ $("intro").classList.add("hidden"); $("quiz").classList.remove("hidden"); render(); }
+
+function render(){
+  const s = steps[cur];
+  $("prog").style.width = (cur/steps.length*100)+"%";
+  $("counter").textContent = `Domanda ${cur+1} di ${steps.length}`;
+  $("areaName").textContent = "";
+  $("tag").textContent = s.area;
+  $("question").textContent = s.q;
+  $("backBtn").style.visibility = cur===0 ? "hidden" : "visible";
+  const box = $("options"); box.innerHTML = "";
+  s.o.forEach((txt,i) => {
+    const b = document.createElement("button");
+    b.className = "opt" + (answers[s.id]===i ? " sel" : "");
+    b.textContent = txt;
+    b.onclick = () => { answers[s.id]=i; b.classList.add("sel"); setTimeout(next, 180); };
+    box.appendChild(b);
+  });
+}
+function next(){ if(cur < steps.length-1){ cur++; render(); } else finish(); }
+function back(){ if(cur>0){ cur--; render(); } }
+
+/* ===== CALCOLO ===== */
+function finish(){
+  const scores = {};
+  AREAS.forEach(a => {
+    const sum = a.qs.reduce((t,_,i) => t + (answers[a.id+"_"+i] ?? 0), 0);
+    scores[a.id] = Math.round(sum / (a.qs.length*3) * 100);
+  });
+  const vals = Object.values(scores);
+  const total = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  const min = Math.min(...vals);
+  const avg = ids => ids.reduce((t,id)=>t+scores[id],0)/ids.length;
+  const groups = {
+    produzione: avg(["org","tech","digit"]),
+    numeri:     avg(["prev","fin"]),
+    mercato:    avg(["mkt","sales","clients"]),
+    persone:    avg(["hr","owner"]),
+  };
+  let arch;
+  if (total >= 70 && min >= 50) arch = "top";
+  else if (total < 35) arch = "restart";
+  else {
+    const topG = Object.entries(groups).sort((a,b)=>b[1]-a[1])[0][0];
+    arch = {produzione: scores.tech>=60 ? "ind" : "craft", numeri:"acct", mercato:"shop", persone:"team"}[topG];
+  }
+  const prios = [...AREAS].sort((a,b)=>scores[a.id]-scores[b.id]).slice(0,3);
+  results = {scores,total,arch,prios};
+  showResults();
+}
+
+const color = v => v>=67 ? "var(--green)" : v>=40 ? "var(--amber)" : "var(--red)";
+
+function showResults(){
+  const {scores,total,arch,prios} = results;
+  $("quiz").classList.add("hidden"); $("results").classList.remove("hidden");
+  window.scrollTo(0,0);
+  // contatore animato
+  let n=0; const t=setInterval(()=>{ n+=2; if(n>=total){n=total;clearInterval(t);} $("total").textContent=n; },20);
+  $("totalLabel").textContent = total>=70 ? "Azienda solida 💪" : total>=45 ? "Buone basi, margini di crescita importanti" : "Ci sono aree critiche su cui intervenire";
+  const A = ARCHETYPES[arch];
+  $("archEmoji").textContent=A.emoji; $("archName").textContent=A.name; $("archDesc").textContent=A.desc;
+  $("radar").innerHTML = radarSVG(scores);
+  $("bars").innerHTML = AREAS.map(a => `<div class="bar-row"><span>${a.name}</span><div class="bar"><div style="width:${scores[a.id]}%;background:${color(scores[a.id])}"></div></div><strong>${scores[a.id]}</strong></div>`).join("");
+  $("prios").innerHTML = prios.map((a,i) => `<div class="prio"><h3>${i+1}. ${a.name} – ${scores[a.id]}/100</h3><p>${a.tip}</p></div>`).join("");
+}
+
+function radarSVG(scores){
+  const size=320, c=size/2, r=110, n=AREAS.length;
+  const pt = (i,v) => { const ang = -Math.PI/2 + i*2*Math.PI/n; return [c + Math.cos(ang)*r*v, c + Math.sin(ang)*r*v]; };
+  let g = "";
+  [0.25,0.5,0.75,1].forEach(k => {
+    g += `<polygon points="${AREAS.map((_,i)=>pt(i,k).join(",")).join(" ")}" fill="none" stroke="#e8dccb"/>`;
+  });
+  AREAS.forEach((a,i) => {
+    const [x,y]=pt(i,1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e8dccb"/>`;
+    const [lx,ly]=pt(i,1.22);
+    const anchor = Math.abs(lx-c)<10 ? "middle" : lx>c ? "start" : "end";
+    g += `<text x="${lx}" y="${ly}" font-size="10.5" fill="#7a6a58" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
+  });
+  const poly = AREAS.map((a,i)=>pt(i,Math.max(scores[a.id],3)/100).join(",")).join(" ");
+  g += `<polygon points="${poly}" fill="rgba(138,90,43,.28)" stroke="#8a5a2b" stroke-width="2.5" stroke-linejoin="round"/>`;
+  AREAS.forEach((a,i)=>{ const [x,y]=pt(i,Math.max(scores[a.id],3)/100); g+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#5b3a1a"/>`; });
+  return `<svg viewBox="-75 -12 ${size+150} ${size+24}" width="100%" style="max-width:440px">${g}</svg>`;
+}
+
+/* ===== LEAD → GHL ===== */
+async function sendLead(e){
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const {scores,total,arch,prios} = results;
+  const payload = {
+    nome: f.get("nome"), azienda: f.get("azienda"), email: f.get("email"), telefono: f.get("telefono"),
+    indice_falegnametro: total, profilo: ARCHETYPES[arch].name,
+    priorita: prios.map(p=>p.name).join(", "),
+    ...Object.fromEntries(PROFILE.map(p => [p.id, p.o[answers[p.id]]])),
+    ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id]])),
+    tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso")],
+  };
+  console.log("Lead Falegnametro:", payload);
+  if (WEBHOOK_URL) {
+    try { await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); }
+    catch(err){ console.error(err); }
+  }
+  e.target.classList.add("hidden"); $("leadOk").classList.remove("hidden");
+  return false;
+}
+</script>
+</body>
+</html>
