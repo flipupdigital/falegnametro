@@ -5,25 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Falegnametro – Il check-up della tua falegnameria</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --wood:#8a5a2b; --wood-dark:#5b3a1a; --wood-light:#f4ead9; --cream:#fbf7f0;
-    --ink:#2a1f14; --muted:#7a6a58; --green:#3f7d4e; --amber:#d08a1e; --red:#b6452c;
+    --wood:#a10d2e; --wood-dark:#7a0a23; --wood-light:#f8ecef; --cream:#f6f5f5;
+    --ink:#1e1e1e; --muted:#6b6b6b; --green:#2f7d4f; --amber:#e0a020; --red:#a10d2e;
     --radius:16px;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}
+  body{margin:0;font-family:"Albert Sans",system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5}
   .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px}
-  h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0 0 .4em}
-  .brand{display:flex;align-items:center;gap:10px;font-family:Fraunces,serif;font-weight:800;font-size:22px;color:var(--wood-dark);margin-bottom:24px}
-  .brand .logo{width:38px;height:38px;border-radius:10px;background:repeating-linear-gradient(100deg,var(--wood) 0 6px,#9c6a37 6px 9px,var(--wood) 9px 16px);display:grid;place-items:center;color:#fff;font-size:20px}
-  .card{background:#fff;border-radius:var(--radius);padding:28px 24px;box-shadow:0 2px 0 rgba(91,58,26,.06),0 10px 30px rgba(91,58,26,.08)}
+  h1,h2,h3{font-family:"Albert Sans",system-ui,sans-serif;margin:0 0 .4em}
+  .brand{display:flex;align-items:center;gap:10px;font-family:"Albert Sans",sans-serif;font-weight:800;font-size:22px;color:var(--wood-dark);margin-bottom:24px}
+  .brand .logo{width:38px;height:38px;border-radius:10px;background:var(--wood);display:grid;place-items:center;color:#fff;font-size:20px}
+  .card{background:#fff;border-radius:var(--radius);padding:28px 24px;box-shadow:0 2px 0 rgba(30,30,30,.06),0 10px 30px rgba(30,30,30,.08)}
   .hero h1{font-size:clamp(30px,6vw,44px);line-height:1.1;color:var(--wood-dark)}
   .hero p{color:var(--muted);font-size:17px}
   .pills{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
   .pill{background:var(--wood-light);color:var(--wood-dark);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600}
-  .btn{appearance:none;border:0;cursor:pointer;background:var(--wood);color:#fff;font:600 16px Inter,sans-serif;padding:14px 24px;border-radius:12px;transition:.15s}
+  .btn{appearance:none;border:0;cursor:pointer;background:var(--wood);color:#fff;font:600 16px "Albert Sans",sans-serif;padding:14px 24px;border-radius:12px;transition:.15s;white-space:nowrap}
   .btn:hover{background:var(--wood-dark)}
   .btn:disabled{opacity:.4;cursor:not-allowed}
   .btn.ghost{background:transparent;color:var(--wood-dark);padding:14px 8px}
@@ -31,16 +31,16 @@
   .progress > div{height:100%;background:var(--wood);width:0;transition:width .3s}
   .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:18px}
   .area-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--wood);margin-bottom:8px}
-  .q{font-size:21px;font-family:Fraunces,serif;font-weight:600;margin-bottom:20px}
+  .q{font-size:21px;font-family:"Albert Sans",sans-serif;font-weight:600;margin-bottom:20px}
   .opts{display:grid;gap:10px}
-  .opt{display:block;text-align:left;width:100%;background:var(--cream);border:2px solid transparent;border-radius:12px;padding:14px 16px;font:500 16px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:.12s}
-  .opt:hover{border-color:#d9c4a3}
+  .opt{display:block;text-align:left;width:100%;background:var(--cream);border:2px solid transparent;border-radius:12px;padding:14px 16px;font:500 16px "Albert Sans",sans-serif;color:var(--ink);cursor:pointer;transition:.12s}
+  .opt:hover{border-color:#e3b5c0}
   .opt.sel{border-color:var(--wood);background:var(--wood-light)}
   .nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
   .hidden{display:none !important}
   /* results */
   .score-hero{text-align:center;padding:10px 0 4px}
-  .big{font-family:Fraunces,serif;font-size:72px;font-weight:800;line-height:1;color:var(--wood-dark)}
+  .big{font-family:"Albert Sans",sans-serif;font-size:72px;font-weight:800;line-height:1;color:var(--wood-dark)}
   .big small{font-size:24px;color:var(--muted)}
   .arch{margin:22px 0;background:var(--wood-light);border-radius:var(--radius);padding:20px}
   .arch .emoji{font-size:40px}
@@ -49,13 +49,13 @@
   .bar-row{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;font-size:14px}
   .bar{height:10px;background:var(--wood-light);border-radius:99px;overflow:hidden}
   .bar > div{height:100%;border-radius:99px}
-  .prio{border-left:4px solid var(--red);padding:12px 16px;background:#fdf3ef;border-radius:0 12px 12px 0;margin-bottom:12px}
-  .prio h3{font-family:Inter,sans-serif;font-size:16px;margin:0 0 4px}
-  .prio p{margin:0;font-size:15px;color:#5a4636}
+  .prio{border-left:4px solid var(--red);padding:12px 16px;background:#f8ecef;border-radius:0 12px 12px 0;margin-bottom:12px}
+  .prio h3{font-family:"Albert Sans",sans-serif;font-size:16px;margin:0 0 4px}
+  .prio p{margin:0;font-size:15px;color:#3a3a3a}
   section + section{margin-top:28px}
   .radar-box{display:flex;justify-content:center;margin:10px 0}
   form{display:grid;gap:12px}
-  input[type=text],input[type=email],input[type=tel]{width:100%;padding:13px 14px;border:2px solid #e8dccb;border-radius:10px;font:16px Inter,sans-serif;background:#fff}
+  input[type=text],input[type=email],input[type=tel]{width:100%;padding:13px 14px;border:2px solid #e4dfdf;border-radius:10px;font:16px "Albert Sans",sans-serif;background:#fff}
   input:focus{outline:none;border-color:var(--wood)}
   .check{display:flex;gap:10px;font-size:13px;color:var(--muted);align-items:flex-start}
   .note{font-size:13px;color:var(--muted)}
@@ -70,9 +70,9 @@
   <!-- INTRO -->
   <div id="intro" class="card hero">
     <h1>Quanto è solida la tua falegnameria?</h1>
-    <p>Rispondi a qualche domanda e scopri il tuo <strong>Indice Falegnametro</strong>: un punteggio su 10 aree chiave, il tuo profilo d'impresa e le 3 priorità su cui lavorare subito.</p>
+    <p>Rispondi a qualche domanda e scopri il tuo <strong>Indice Falegnametro</strong>: un punteggio su 12 aree chiave, il tuo profilo d'impresa e le 3 priorità su cui lavorare subito.</p>
     <div class="pills">
-      <span class="pill">⏱ 6 minuti</span><span class="pill">📱 Dal telefono</span><span class="pill">🔒 Risposte riservate</span><span class="pill">🎯 Consigli concreti</span>
+      <span class="pill">⏱ 7 minuti</span><span class="pill">📱 Dal telefono</span><span class="pill">🔒 Risposte riservate</span><span class="pill">🎯 Consigli concreti</span>
     </div>
     <button class="btn" onclick="start()">Inizia il check-up →</button>
   </div>
@@ -165,6 +165,19 @@ const AREAS = [
     {q:"Come disegni i progetti?", o:["A mano","Con un CAD generico (es. AutoCAD)","Con un software per arredo","Con software collegato alle macchine (CAD/CAM)"]},
     {q:"Come gestisci ordini, materiali e magazzino?", o:["A memoria / carta","Excel","In parte con un gestionale","Con un gestionale che uso davvero"]},
     {q:"Usi strumenti digitali con i clienti (render, firma online, condivisione file)?", o:["No","Raramente","Spesso","Sempre, è parte del metodo"]},
+   ]},
+  {id:"rilievi", name:"Rilievi", tip:"Un rilievo laser digitale (es. distanziometri Leica DISTO con app o scanner 3D) riduce molto i tempi in cantiere, elimina gli errori di trascrizione e porta le misure dritte nel software di disegno. Spesso si ripaga con il primo pezzo che non devi rifare.",
+   qs:[
+    {q:"Con cosa fai i rilievi in cantiere?", o:["Metro a nastro e carta","Metro + distanziometro laser semplice","Distanziometro laser con app / Bluetooth che salva le misure","Strumento laser 3D o scanner che crea il disegno"]},
+    {q:"Quanto tempo ti serve per rilevare un ambiente (es. una cucina)?", o:["Più di mezza giornata, e spesso devo tornare","2–4 ore","1–2 ore","Meno di un'ora, e non devo tornare"]},
+    {q:"Ti capita di rifare o adattare pezzi per errori di misura?", o:["Spesso","Ogni tanto","Raramente","Quasi mai"]},
+    {q:"Come arrivano le misure a chi disegna il progetto?", o:["Su un foglio da ricopiare","Foto di appunti o messaggi","File digitale da reinserire a mano","Direttamente nel software di disegno"]},
+   ]},
+  {id:"montaggio", name:"Montaggio", tip:"Prepara una checklist di montaggio e un kit standard per il furgone, e fai firmare un verbale di fine lavori con foto. Meno ritorni dal cliente significano più margine e più recensioni positive.",
+   qs:[
+    {q:"Chi fa i montaggi?", o:["Io, sempre","Io con un aiutante","Una squadra interna dedicata","Squadre interne o esterne organizzate e formate"]},
+    {q:"Quanto spesso devi tornare dal cliente dopo il montaggio per sistemare qualcosa?", o:["Quasi sempre","Spesso","Ogni tanto","Raramente"]},
+    {q:"Sai quanto ti costa un montaggio e lo metti in preventivo?", o:["No, lo regalo o vado a occhio","Metto una cifra forfettaria","Sì, stimo le ore","Sì, con costi e tempi misurati"]},
    ]},
   {id:"prev", name:"Preventivi", tip:"Calcola il tuo costo orario reale (costi fissi + personale ÷ ore produttive). Senza quel numero ogni preventivo è un'ipotesi e rischi di lavorare in perdita senza saperlo.",
    qs:[
@@ -265,7 +278,7 @@ function finish(){
   const min = Math.min(...vals);
   const avg = ids => ids.reduce((t,id)=>t+scores[id],0)/ids.length;
   const groups = {
-    produzione: avg(["org","tech","digit"]),
+    produzione: avg(["org","tech","digit","rilievi","montaggio"]),
     numeri:     avg(["prev","fin"]),
     mercato:    avg(["mkt","sales","clients"]),
     persone:    avg(["hr","owner"]),
@@ -303,17 +316,17 @@ function radarSVG(scores){
   const pt = (i,v) => { const ang = -Math.PI/2 + i*2*Math.PI/n; return [c + Math.cos(ang)*r*v, c + Math.sin(ang)*r*v]; };
   let g = "";
   [0.25,0.5,0.75,1].forEach(k => {
-    g += `<polygon points="${AREAS.map((_,i)=>pt(i,k).join(",")).join(" ")}" fill="none" stroke="#e8dccb"/>`;
+    g += `<polygon points="${AREAS.map((_,i)=>pt(i,k).join(",")).join(" ")}" fill="none" stroke="#e4dfdf"/>`;
   });
   AREAS.forEach((a,i) => {
-    const [x,y]=pt(i,1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e8dccb"/>`;
+    const [x,y]=pt(i,1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e4dfdf"/>`;
     const [lx,ly]=pt(i,1.22);
     const anchor = Math.abs(lx-c)<10 ? "middle" : lx>c ? "start" : "end";
-    g += `<text x="${lx}" y="${ly}" font-size="10.5" fill="#7a6a58" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
+    g += `<text x="${lx}" y="${ly}" font-size="10.5" fill="#6b6b6b" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
   });
   const poly = AREAS.map((a,i)=>pt(i,Math.max(scores[a.id],3)/100).join(",")).join(" ");
-  g += `<polygon points="${poly}" fill="rgba(138,90,43,.28)" stroke="#8a5a2b" stroke-width="2.5" stroke-linejoin="round"/>`;
-  AREAS.forEach((a,i)=>{ const [x,y]=pt(i,Math.max(scores[a.id],3)/100); g+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#5b3a1a"/>`; });
+  g += `<polygon points="${poly}" fill="rgba(161,13,46,.18)" stroke="#a10d2e" stroke-width="2.5" stroke-linejoin="round"/>`;
+  AREAS.forEach((a,i)=>{ const [x,y]=pt(i,Math.max(scores[a.id],3)/100); g+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#7a0a23"/>`; });
   return `<svg viewBox="-75 -12 ${size+150} ${size+24}" width="100%" style="max-width:440px">${g}</svg>`;
 }
 
@@ -326,9 +339,11 @@ async function sendLead(e){
     nome: f.get("nome"), azienda: f.get("azienda"), email: f.get("email"), telefono: f.get("telefono"),
     indice_falegnametro: total, profilo: ARCHETYPES[arch].name,
     priorita: prios.map(p=>p.name).join(", "),
+    strumento_rilievi: AREAS.find(a=>a.id==="rilievi").qs[0].o[answers.rilievi_0],
+    rilievi_manuali: answers.rilievi_0 <= 1,
     ...Object.fromEntries(PROFILE.map(p => [p.id, p.o[answers[p.id]]])),
     ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id]])),
-    tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso")],
+    tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso"), ...(answers.rilievi_0 <= 1 ? ["falegnametro_rilievi_manuali"] : [])],
   };
   console.log("Lead Falegnametro:", payload);
   if (WEBHOOK_URL) {
