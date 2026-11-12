@@ -152,7 +152,7 @@ const PROFILE = [
 const AREAS = [
   {id:"org", name:"Organizzazione", tip:"Introduci una riunione di 15 minuti a inizio settimana con un tabellone delle commesse (anche una lavagna): chi fa cosa, cosa esce, cosa manca.",
    qs:[
-    {q:"Sai dire oggi quali commesse escono la prossima settimana?", o:["No, si vede giorno per giorno","Più o meno, ce l'ho in testa io","Sì, è scritto su un foglio/lavagna","Sì, c'è una pianificazione condivisa con tutti"]},
+    {q:"Sai dire oggi quali commesse escono la prossima settimana?", o:["No, si vede giorno per giorno","Più o meno, ce l'ho in testa io","Sì, ne parliamo a voce con la squadra","Sì, è scritta e condivisa (lavagna, foglio o software)"]},
     {q:"Ognuno in laboratorio sa cosa deve fare senza chiedere a te?", o:["No, chiedono sempre a me","Solo i più esperti","Quasi sempre","Sì, ci sono ruoli e responsabilità chiari"]},
     {q:"Quanto spesso una consegna slitta rispetto alla data promessa?", o:["Quasi sempre","Spesso","Ogni tanto","Raramente"]},
    ]},
@@ -168,9 +168,9 @@ const AREAS = [
     {q:"Come gestisci ordini, materiali e magazzino?", o:["A memoria / carta","Excel","In parte con un gestionale","Con un gestionale che uso davvero"]},
     {q:"Usi strumenti digitali con i clienti (render, firma online, condivisione file)?", o:["No","Raramente","Spesso","Sempre, è parte del metodo"]},
    ]},
-  {id:"rilievi", name:"Rilievi", tip:"Un sistema di rilievo digitale (laser scanner e misurazione 3D, anche con penna di rilievo) riduce molto i tempi in cantiere, elimina gli errori di trascrizione e porta le misure dritte nel software di disegno. Spesso si ripaga con il primo pezzo che non devi rifare.",
+  {id:"rilievi", name:"Rilievi", tip:"Usare strumenti di rilievo 3D (laser scanner, nuvola di punti, misurazione 3D anche con penna) riduce molto i tempi in cantiere, elimina gli errori di trascrizione e porta le misure dritte nel software di disegno. Spesso si ripaga con il primo pezzo che non devi rifare.",
    qs:[
-    {q:"Con cosa fai i rilievi in cantiere?", o:["Metro a nastro e carta","Metro + distanziometro laser semplice","Distanziometro laser con app / Bluetooth che salva le misure","Laser scanner o misurazione 3D (anche con penna di rilievo)"]},
+    {q:"Con cosa fai i rilievi in cantiere?", o:["Metro a nastro e carta","Metro + distanziometro laser semplice","Distanziometro laser con app / Bluetooth che salva le misure","Strumenti di rilievo 3D (laser scanner, nuvola di punti, penna)"]},
     {q:"Quanto tempo ti serve per rilevare un ambiente (es. una cucina)?", o:["Più di mezza giornata, e spesso devo tornare","2–4 ore","1–2 ore","Meno di un'ora, e non devo tornare"]},
     {q:"Ti capita di rifare o adattare pezzi per errori di misura?", o:["Spesso","Ogni tanto","Raramente","Quasi mai"]},
     {q:"Come arrivano le misure a chi disegna il progetto?", o:["Su un foglio da ricopiare","Foto di appunti o messaggi","File digitale da reinserire a mano","Direttamente nel software di disegno"]},
@@ -196,7 +196,7 @@ const AREAS = [
   {id:"hr", name:"Persone", tip:"Rendi visibile il tuo laboratorio come posto dove si lavora bene: foto del team, macchine moderne, percorsi di crescita. I giovani scelgono l'azienda, non solo lo stipendio.",
    qs:[
     {q:"Negli ultimi 12 mesi hai cercato personale?", o:["Sì, e non ho trovato nessuno","Sì, con molta fatica","Sì, e ho trovato","Non serviva / arrivano candidature"]},
-    {q:"Offri qualcosa oltre lo stipendio (welfare, premi, formazione)?", o:["No","Qualcosa ogni tanto","Sì, alcune cose","Sì, un piano strutturato"]},
+    {q:"Oltre al welfare obbligatorio del contratto, offri qualcosa in più (premi, formazione, benefit)?", o:["No, solo il welfare obbligatorio","Qualcosa ogni tanto","Sì, alcune cose","Sì, un piano strutturato"]},
     {q:"I tuoi collaboratori restano nel tempo?", o:["No, c'è molto ricambio","Qualcuno se ne va","Quasi tutti restano","Sì, squadra stabile"]},
    ]},
   {id:"mkt", name:"Marketing", tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
