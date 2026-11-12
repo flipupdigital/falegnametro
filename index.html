@@ -120,26 +120,27 @@
     </div>
 
     <div class="card" style="margin-top:20px" id="leadCard">
-      <h2>Ricevi il report completo</h2>
-      <p class="note" style="font-size:15px">Ti mandiamo il report dettagliato con il piano d'azione per le tue 3 priorità e il confronto con le falegnamerie simili alla tua.</p>
+      <h2>Scarica il report completo</h2>
+      <p class="note" style="font-size:15px">Un PDF con i tuoi punteggi, il profilo e un piano d'azione in 3 passi per ognuna delle tue 3 priorità.</p>
       <form id="leadForm" onsubmit="return sendLead(event)">
         <input type="text" name="nome" placeholder="Nome e cognome" required>
         <input type="text" name="azienda" placeholder="Nome della falegnameria" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="tel" name="telefono" placeholder="Telefono (WhatsApp)">
         <label class="check"><input type="checkbox" required> Acconsento al trattamento dei dati per ricevere il report e essere ricontattato.</label>
-        <button class="btn" type="submit">Mandami il report →</button>
+        <button class="btn" type="submit" id="leadBtn">Scarica il report PDF</button>
       </form>
-      <div id="leadOk" class="ok hidden">✅ Fatto! Ti arriverà il report a breve.</div>
+      <div id="leadOk" class="ok hidden">Fatto! Il report è stato scaricato.<br><button class="btn ghost" style="padding:10px 0 0" onclick="downloadReport()">Scaricalo di nuovo</button></div>
     </div>
     <p style="text-align:center;margin-top:18px"><button class="btn ghost" onclick="location.reload()">↺ Rifai il test</button></p>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
 /* ===== CONFIG ===== */
-// Inserisci qui l'URL del webhook GoHighLevel (Automation → Inbound Webhook). Vuoto = i dati vengono solo stampati in console.
-const WEBHOOK_URL = "";
+// URL dell'app web Google Apps Script collegata al foglio (vedi google-sheet-script.gs). Vuoto = i dati restano solo in console.
+const SHEET_URL = "";
 
 /* ===== DATI ===== */
 const PROFILE = [
@@ -235,6 +236,22 @@ const ARCHETYPES = {
   team:    {emoji:"🤝", name:"Il Capobottega", desc:"Hai costruito una squadra solida che va avanti anche senza di te. Ottima base per investire su tecnologia e mercato."},
 };
 
+// Piano d'azione per il report PDF: 3 passi per area, dal più semplice al più impegnativo.
+const PLANS = {
+  org:["Questa settimana: scrivi su una lavagna in laboratorio le commesse delle prossime 2 settimane, con data di uscita.","Entro un mese: fai una riunione di 15 minuti ogni lunedì con tutta la squadra davanti a quella lavagna.","Entro 3 mesi: assegna a ogni persona un'area di responsabilità chiara (taglio, bordatura, montaggio, ordini)."],
+  tech:["Questa settimana: fai l'elenco delle macchine con anno, ore di fermo nell'ultimo anno e lavorazioni ancora fatte a mano.","Entro un mese: imposta un calendario di manutenzione programmata per le macchine principali.","Entro 3 mesi: valuta con un fornitore l'investimento che toglierebbe più ore di lavoro manuale, verificando gli incentivi disponibili."],
+  digit:["Questa settimana: scegli il processo che oggi fai a mano e che ti costa più tempo (disegno, ordini, magazzino).","Entro un mese: prova un software per quel processo, anche in versione demo.","Entro 3 mesi: collega disegno e produzione, così le liste di taglio escono dal progetto senza ricopiarle."],
+  rilievi:["Questa settimana: conta quante volte negli ultimi 3 mesi hai rifatto o adattato pezzi per errori di misura, e quanto ti sono costati.","Entro un mese: prova strumenti di rilievo 3D (laser scanner, nuvola di punti, penna) su un cantiere reale.","Entro 3 mesi: fai arrivare le misure direttamente nel software di disegno, senza ricopiarle da fogli o foto."],
+  montaggio:["Questa settimana: prepara una checklist di montaggio e l'elenco del kit standard per il furgone.","Entro un mese: fai firmare al cliente un verbale di fine lavori con foto, e chiedi lì la recensione.","Entro 3 mesi: misura ore e costo medio di un montaggio e mettilo come voce a parte nei preventivi."],
+  prev:["Questa settimana: calcola il costo orario del laboratorio: costi fissi + personale, diviso le ore produttive dell'anno.","Entro un mese: costruisci un modello di preventivo con materiali, ore stimate per fase e margine.","Entro 3 mesi: a ogni commessa chiusa confronta ore e materiali previsti con quelli reali."],
+  fin:["Questa settimana: scrivi l'elenco dei costi fissi mensili (affitto, personale, leasing, utenze, assicurazioni).","Entro un mese: chiedi sempre un acconto all'ordine e fissa per iscritto le date dei saldi.","Entro 3 mesi: tieni un prospetto mensile con incassi previsti nei prossimi 90 giorni e saldo in banca."],
+  hr:["Questa settimana: chiedi ai tuoi collaboratori cosa li farebbe restare e cosa li farebbe andare via.","Entro un mese: scegli un benefit concreto oltre al welfare obbligatorio (premio di produzione, formazione, orario flessibile).","Entro 3 mesi: mostra il laboratorio come posto dove si lavora bene: foto del team e delle macchine sui social e sul sito."],
+  mkt:["Questa settimana: fotografa bene i prossimi 3 lavori finiti, con luce naturale e senza disordine.","Entro un mese: pubblica un lavoro a settimana con 2 righe di storia, e chiedi una recensione Google a ogni consegna.","Entro 3 mesi: aggiorna il sito con i lavori migliori, divisi per tipologia, e un modo semplice per contattarti."],
+  sales:["Questa settimana: segna su un foglio tutti i preventivi aperti con data di invio.","Entro un mese: richiama ogni preventivo dopo 3-5 giorni, sempre.","Entro 3 mesi: misura quanti preventivi diventano ordini e da quale canale arrivano i clienti migliori."],
+  owner:["Questa settimana: scrivi l'elenco delle attività che oggi fai solo tu.","Entro un mese: scegline una (es. i rilievi o i preventivi semplici) e affiancati a una persona per insegnargliela.","Entro 3 mesi: prova a stare fuori una settimana e annota cosa si blocca: è la lista delle prossime cose da delegare."],
+  clients:["Questa settimana: calcola quanto pesano sul fatturato i tuoi 3 clienti principali.","Entro un mese: individua il tipo di lavoro su cui guadagni di più e scrivi dove trovare clienti simili.","Entro 3 mesi: costruisci un secondo canale di lavoro (architetti, imprese, contract) per non dipendere da pochi nomi."],
+};
+
 /* ===== STATO ===== */
 const steps = [
   ...PROFILE.map(p => ({type:"profile", id:p.id, area:"Profilo", q:p.q, o:p.o})),
@@ -324,36 +341,146 @@ function radarSVG(scores){
     const [x,y]=pt(i,1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e4dfdf"/>`;
     const [lx,ly]=pt(i,1.22);
     const anchor = Math.abs(lx-c)<10 ? "middle" : lx>c ? "start" : "end";
-    g += `<text x="${lx}" y="${ly}" font-size="10.5" fill="#6b6b6b" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
+    g += `<text x="${lx}" y="${ly}" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b6b6b" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
   });
   const poly = AREAS.map((a,i)=>pt(i,Math.max(scores[a.id],3)/100).join(",")).join(" ");
   g += `<polygon points="${poly}" fill="rgba(161,13,46,.18)" stroke="#a10d2e" stroke-width="2.5" stroke-linejoin="round"/>`;
   AREAS.forEach((a,i)=>{ const [x,y]=pt(i,Math.max(scores[a.id],3)/100); g+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#7a0a23"/>`; });
-  return `<svg viewBox="-75 -12 ${size+150} ${size+24}" width="100%" style="max-width:440px">${g}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -12 ${size+150} ${size+24}" width="100%" style="max-width:440px">${g}</svg>`;
 }
 
-/* ===== LEAD → GHL ===== */
+/* ===== LEAD → GOOGLE SHEET ===== */
+let lead = null;
 async function sendLead(e){
   e.preventDefault();
   const f = new FormData(e.target);
   const {scores,total,arch,prios} = results;
+  lead = {nome: f.get("nome"), azienda: f.get("azienda"), email: f.get("email"), telefono: f.get("telefono")};
   const payload = {
-    nome: f.get("nome"), azienda: f.get("azienda"), email: f.get("email"), telefono: f.get("telefono"),
+    ...lead,
     indice_falegnametro: total, profilo: ARCHETYPES[arch].name,
     priorita: prios.map(p=>p.name).join(", "),
     strumento_rilievi: AREAS.find(a=>a.id==="rilievi").qs[0].o[answers.rilievi_0],
-    rilievi_manuali: answers.rilievi_0 <= 1,
+    rilievi_manuali: answers.rilievi_0 <= 1 ? "SI" : "NO",
     ...Object.fromEntries(PROFILE.map(p => [p.id, p.o[answers[p.id]]])),
     ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id]])),
-    tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso"), ...(answers.rilievi_0 <= 1 ? ["falegnametro_rilievi_manuali"] : [])],
+    tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso"), ...(answers.rilievi_0 <= 1 ? ["falegnametro_rilievi_manuali"] : [])].join(", "),
+    risposte: steps.map(s => s.q + " → " + s.o[answers[s.id]]).join(" | "),
   };
   console.log("Lead Falegnametro:", payload);
-  if (WEBHOOK_URL) {
-    try { await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); }
-    catch(err){ console.error(err); }
+  const btn = $("leadBtn"); btn.disabled = true; btn.textContent = "Preparo il report…";
+  if (SHEET_URL) {
+    // text/plain + no-cors: nessuna richiesta preliminare, funziona con Apps Script
+    fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
+      .catch(err => console.error(err));
   }
+  try { await downloadReport(); }
+  catch(err){ console.error(err); alert("Non sono riuscito a creare il PDF. Riprova tra poco."); btn.disabled=false; btn.textContent="Scarica il report PDF"; return false; }
   e.target.classList.add("hidden"); $("leadOk").classList.remove("hidden");
   return false;
+}
+
+/* ===== REPORT PDF ===== */
+function svgToPng(svg, px){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => { const c=document.createElement("canvas"); c.width=px; c.height=Math.round(px*img.height/img.width);
+      const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); res({data:c.toDataURL("image/jpeg", 0.9), ratio:c.height/c.width}); };
+    img.onerror = rej;
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.replace('width="100%"','width="'+px+'"'));
+  });
+}
+async function buildReport(){
+  const {scores,total,arch,prios} = results;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:"mm", format:"a4"});
+  const RED=[161,13,46], INK=[30,30,30], MUTED=[107,107,107], TINT=[248,236,239];
+  const col = v => v>=67 ? [47,125,79] : v>=40 ? [224,160,32] : RED;
+  const L=15, R=195, W=R-L;
+  let y = 0;
+  const footer = () => { doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...MUTED);
+    doc.text("Falegnametro · flipupdigital.github.io/falegnametro", L, 290); doc.text("Pag. "+doc.getNumberOfPages(), R, 290, {align:"right"}); };
+  const ensure = h => { if (y + h > 280) { footer(); doc.addPage(); y = 20; } };
+
+  // intestazione
+  doc.setFillColor(...RED); doc.rect(0,0,210,30,"F");
+  doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Falegnametro", L, 15);
+  doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text("Report del check-up della falegnameria", L, 22);
+  doc.setFont("helvetica","bold"); doc.text((lead && lead.azienda) || "", R, 15, {align:"right"});
+  doc.setFont("helvetica","normal"); doc.text(new Date().toLocaleDateString("it-IT"), R, 22, {align:"right"});
+
+  // indice
+  y = 44;
+  doc.setTextColor(...MUTED); doc.setFontSize(10); doc.text("Indice Falegnametro", L, y);
+  doc.setTextColor(...RED); doc.setFont("helvetica","bold"); doc.setFontSize(44); doc.text(String(total), L, y+17);
+  const nw = doc.getTextWidth(String(total));
+  doc.setFontSize(16); doc.setTextColor(...MUTED); doc.text("/100", L+nw+1.5, y+17);
+  doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+  const label = total>=70 ? "Azienda solida" : total>=45 ? "Buone basi, margini di crescita importanti" : "Ci sono aree critiche su cui intervenire";
+  doc.text(doc.splitTextToSize(label, 60), L, y+25);
+
+  // profilo
+  const A = ARCHETYPES[arch];
+  doc.setFontSize(9.5);
+  const desc = doc.splitTextToSize(A.desc, 100);
+  const ph = 18 + desc.length*4.4;
+  doc.setFillColor(...TINT); doc.roundedRect(85, y-6, 110, ph, 3, 3, "F");
+  doc.setTextColor(...MUTED); doc.setFontSize(9); doc.text("Il tuo profilo", 90, y);
+  doc.setTextColor(...RED); doc.setFont("helvetica","bold"); doc.setFontSize(15); doc.text(A.name, 90, y+7);
+  doc.setTextColor(...INK); doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.text(desc, 90, y+13.5);
+  y = Math.max(y+34, y-6+ph+10);
+
+  // mappa: radar + barre
+  doc.setTextColor(...INK); doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.text("La tua mappa", L, y); y += 3;
+  const img = await svgToPng(radarSVG(scores), 1000);
+  const iw = 90, ih = iw*img.ratio;
+  doc.addImage(img.data, "JPEG", L-3, y, iw, ih);
+  let by = y + 8;
+  AREAS.forEach(a => {
+    const v = scores[a.id];
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...INK); doc.text(a.name, 110, by);
+    doc.setFillColor(...TINT); doc.roundedRect(150, by-2.6, 36, 3, 1.5, 1.5, "F");
+    if (v>0) { doc.setFillColor(...col(v)); doc.roundedRect(150, by-2.6, Math.max(3, 36*v/100), 3, 1.5, 1.5, "F"); }
+    doc.setFont("helvetica","bold"); doc.text(String(v), R, by, {align:"right"});
+    by += 6;
+  });
+  y = Math.max(y + ih, by) + 8;
+
+  // priorità + piano d'azione
+  ensure(24);
+  doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor(...INK);
+  doc.text("Le tue 3 priorità e il piano d'azione", L, y); y += 9;
+  prios.forEach((a,i) => {
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+    const tip = doc.splitTextToSize(a.tip, W-6);
+    ensure(16 + tip.length*4.4);
+    doc.setFillColor(...RED); doc.rect(L, y-4.2, 1.2, 5.5, "F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(11.5); doc.setTextColor(...RED);
+    doc.text(`${i+1}. ${a.name} · ${scores[a.id]}/100`, L+4, y); y += 6;
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(...INK);
+    doc.text(tip, L+4, y); y += tip.length*4.4 + 2.5;
+    PLANS[a.id].forEach(step => {
+      const k = step.indexOf(": "); const when = step.slice(0,k), what = step.charAt(k+2).toUpperCase() + step.slice(k+3);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+      const body = doc.splitTextToSize(what, W-40);
+      ensure(body.length*4.4 + 2);
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(...RED); doc.text(when, L+4, y);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(...INK); doc.text(body, L+40, y);
+      y += body.length*4.4 + 2;
+    });
+    y += 6;
+  });
+
+  ensure(14);
+  doc.setFont("helvetica","italic"); doc.setFontSize(9); doc.setTextColor(...MUTED);
+  doc.text(doc.splitTextToSize("Vuoi capire da dove partire? Contattaci: ti aiutiamo a trasformare queste priorità in risultati concreti.", W), L, y);
+  footer();
+  return doc;
+}
+async function downloadReport(){
+  const doc = await buildReport();
+  const nome = ((lead && lead.azienda) || "report").replace(/[^\w\sàèéìòù-]/gi,"").trim() || "report";
+  doc.save("Falegnametro - " + nome + ".pdf");
 }
 </script>
 </body>
