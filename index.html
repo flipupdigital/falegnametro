@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
 <title>Falegnametro – Il check-up della tua falegnameria</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme: only light;
     --wood:#a10d2e; --wood-dark:#7a0a23; --wood-light:#f8ecef; --cream:#f6f5f5;
     --ink:#1e1e1e; --muted:#6b6b6b; --green:#2f7d4f; --amber:#e0a020; --red:#a10d2e;
     --radius:16px;
@@ -166,9 +168,9 @@ const AREAS = [
     {q:"Come gestisci ordini, materiali e magazzino?", o:["A memoria / carta","Excel","In parte con un gestionale","Con un gestionale che uso davvero"]},
     {q:"Usi strumenti digitali con i clienti (render, firma online, condivisione file)?", o:["No","Raramente","Spesso","Sempre, è parte del metodo"]},
    ]},
-  {id:"rilievi", name:"Rilievi", tip:"Un rilievo laser digitale (es. distanziometri Leica DISTO con app o scanner 3D) riduce molto i tempi in cantiere, elimina gli errori di trascrizione e porta le misure dritte nel software di disegno. Spesso si ripaga con il primo pezzo che non devi rifare.",
+  {id:"rilievi", name:"Rilievi", tip:"Un sistema di rilievo digitale (laser scanner e misurazione 3D, anche con penna di rilievo) riduce molto i tempi in cantiere, elimina gli errori di trascrizione e porta le misure dritte nel software di disegno. Spesso si ripaga con il primo pezzo che non devi rifare.",
    qs:[
-    {q:"Con cosa fai i rilievi in cantiere?", o:["Metro a nastro e carta","Metro + distanziometro laser semplice","Distanziometro laser con app / Bluetooth che salva le misure","Strumento laser 3D o scanner che crea il disegno"]},
+    {q:"Con cosa fai i rilievi in cantiere?", o:["Metro a nastro e carta","Metro + distanziometro laser semplice","Distanziometro laser con app / Bluetooth che salva le misure","Laser scanner o misurazione 3D (anche con penna di rilievo)"]},
     {q:"Quanto tempo ti serve per rilevare un ambiente (es. una cucina)?", o:["Più di mezza giornata, e spesso devo tornare","2–4 ore","1–2 ore","Meno di un'ora, e non devo tornare"]},
     {q:"Ti capita di rifare o adattare pezzi per errori di misura?", o:["Spesso","Ogni tanto","Raramente","Quasi mai"]},
     {q:"Come arrivano le misure a chi disegna il progetto?", o:["Su un foglio da ricopiare","Foto di appunti o messaggi","File digitale da reinserire a mano","Direttamente nel software di disegno"]},
