@@ -200,7 +200,7 @@ const AREAS = [
     {q:"Oltre al welfare obbligatorio del contratto, offri qualcosa in più (premi, formazione, benefit)?", o:["No, solo il welfare obbligatorio","Qualcosa ogni tanto","Sì, alcune cose","Sì, un piano strutturato"]},
     {q:"I tuoi collaboratori restano nel tempo?", o:["No, c'è molto ricambio","Qualcuno se ne va","Quasi tutti restano","Sì, squadra stabile"]},
    ]},
-  {id:"mkt", name:"Marketing", tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
+  {id:"mkt", name:"Marketing", na:"Non cerco nuovi clienti: ho già lavoro a sufficienza", tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
    qs:[
     {q:"Hai un sito internet aggiornato con i tuoi lavori?", o:["No","Sì, ma vecchio","Sì, abbastanza aggiornato","Sì, aggiornato e porta contatti"]},
     {q:"Pubblichi i tuoi lavori sui social?", o:["Mai","Ogni tanto","Almeno una volta al mese","Ogni settimana, con una strategia"]},
@@ -255,13 +255,17 @@ const PLANS = {
 /* ===== STATO ===== */
 const steps = [
   ...PROFILE.map(p => ({type:"profile", id:p.id, area:"Profilo", q:p.q, o:p.o})),
-  ...AREAS.flatMap(a => a.qs.map((qq,i) => ({type:"area", id:a.id+"_"+i, areaId:a.id, area:a.name, q:qq.q, o:qq.o}))),
+  ...AREAS.flatMap(a => a.qs.map((qq,i) => ({type:"area", id:a.id+"_"+i, areaId:a.id, area:a.name, q:qq.q,
+    o: (i===0 && a.na) ? [...qq.o, a.na] : qq.o, na: (i===0 && a.na) ? qq.o.length : undefined}))),
 ];
 const answers = {};
 let cur = 0;
 let results = null;
 
 const $ = id => document.getElementById(id);
+// "non valutata": chi non cerca clienti salta le altre domande di Marketing e l'area non conta nel punteggio
+const isNA = areaId => answers[areaId+"_0"] === "na";
+const skip = s => s.type==="area" && !s.id.endsWith("_0") && isNA(s.areaId);
 
 function start(){ $("intro").classList.add("hidden"); $("quiz").classList.remove("hidden"); render(); }
 
@@ -276,26 +280,27 @@ function render(){
   const box = $("options"); box.innerHTML = "";
   s.o.forEach((txt,i) => {
     const b = document.createElement("button");
-    b.className = "opt" + (answers[s.id]===i ? " sel" : "");
+    b.className = "opt" + ((answers[s.id]===i || (answers[s.id]==="na" && s.na===i)) ? " sel" : "");
     b.textContent = txt;
-    b.onclick = () => { answers[s.id]=i; b.classList.add("sel"); setTimeout(next, 180); };
+    b.onclick = () => { answers[s.id] = (s.na===i) ? "na" : i; b.classList.add("sel"); setTimeout(next, 180); };
     box.appendChild(b);
   });
 }
-function next(){ if(cur < steps.length-1){ cur++; render(); } else finish(); }
-function back(){ if(cur>0){ cur--; render(); } }
+function next(){ let n=cur+1; while(n<steps.length && skip(steps[n])) n++; if(n<steps.length){ cur=n; render(); } else finish(); }
+function back(){ let n=cur-1; while(n>0 && skip(steps[n])) n--; if(n>=0){ cur=n; render(); } }
 
 /* ===== CALCOLO ===== */
 function finish(){
   const scores = {};
   AREAS.forEach(a => {
+    if (isNA(a.id)) { scores[a.id] = null; return; }
     const sum = a.qs.reduce((t,_,i) => t + (answers[a.id+"_"+i] ?? 0), 0);
     scores[a.id] = Math.round(sum / (a.qs.length*3) * 100);
   });
-  const vals = Object.values(scores);
+  const vals = Object.values(scores).filter(v => v !== null);
   const total = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
   const min = Math.min(...vals);
-  const avg = ids => ids.reduce((t,id)=>t+scores[id],0)/ids.length;
+  const avg = ids => { const v = ids.map(id => scores[id]).filter(x => x !== null); return v.reduce((t,x)=>t+x,0)/v.length; };
   const groups = {
     produzione: avg(["org","tech","digit","rilievi","montaggio"]),
     numeri:     avg(["prev","fin"]),
@@ -309,7 +314,7 @@ function finish(){
     const topG = Object.entries(groups).sort((a,b)=>b[1]-a[1])[0][0];
     arch = {produzione: scores.tech>=60 ? "ind" : "craft", numeri:"acct", mercato:"shop", persone:"team"}[topG];
   }
-  const prios = [...AREAS].sort((a,b)=>scores[a.id]-scores[b.id]).slice(0,3);
+  const prios = [...AREAS].filter(a => scores[a.id] !== null).sort((a,b)=>scores[a.id]-scores[b.id]).slice(0,3);
   results = {scores,total,arch,prios};
   showResults();
 }
@@ -326,7 +331,7 @@ function showResults(){
   const A = ARCHETYPES[arch];
   $("archEmoji").textContent=A.emoji; $("archName").textContent=A.name; $("archDesc").textContent=A.desc;
   $("radar").innerHTML = radarSVG(scores);
-  $("bars").innerHTML = AREAS.map(a => `<div class="bar-row"><span>${a.name}</span><div class="bar"><div style="width:${scores[a.id]}%;background:${color(scores[a.id])}"></div></div><strong>${scores[a.id]}</strong></div>`).join("");
+  $("bars").innerHTML = AREAS.map(a => scores[a.id]===null ? `<div class="bar-row"><span>${a.name}</span><span class="note">Non valutata: non cerchi nuovi clienti</span><strong>–</strong></div>` : `<div class="bar-row"><span>${a.name}</span><div class="bar"><div style="width:${scores[a.id]}%;background:${color(scores[a.id])}"></div></div><strong>${scores[a.id]}</strong></div>`).join("");
   $("prios").innerHTML = prios.map((a,i) => `<div class="prio"><h3>${i+1}. ${a.name} – ${scores[a.id]}/100</h3><p>${a.tip}</p></div>`).join("");
 }
 
@@ -341,7 +346,7 @@ function radarSVG(scores){
     const [x,y]=pt(i,1); g += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e4dfdf"/>`;
     const [lx,ly]=pt(i,1.22);
     const anchor = Math.abs(lx-c)<10 ? "middle" : lx>c ? "start" : "end";
-    g += `<text x="${lx}" y="${ly}" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b6b6b" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}</text>`;
+    g += `<text x="${lx}" y="${ly}" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b6b6b" text-anchor="${anchor}" dominant-baseline="middle">${a.name.split(" ")[0]}${scores[a.id]===null ? " (n.v.)" : ""}</text>`;
   });
   const poly = AREAS.map((a,i)=>pt(i,Math.max(scores[a.id],3)/100).join(",")).join(" ");
   g += `<polygon points="${poly}" fill="rgba(161,13,46,.18)" stroke="#a10d2e" stroke-width="2.5" stroke-linejoin="round"/>`;
@@ -363,9 +368,10 @@ async function sendLead(e){
     strumento_rilievi: AREAS.find(a=>a.id==="rilievi").qs[0].o[answers.rilievi_0],
     rilievi_manuali: answers.rilievi_0 <= 1 ? "SI" : "NO",
     ...Object.fromEntries(PROFILE.map(p => [p.id, p.o[answers[p.id]]])),
-    ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id]])),
+    cerca_clienti: isNA("mkt") ? "NO" : "SI",
+    ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id] ?? "n.v."])),
     tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso"), ...(answers.rilievi_0 <= 1 ? ["falegnametro_rilievi_manuali"] : [])].join(", "),
-    risposte: steps.map(s => s.q + " → " + s.o[answers[s.id]]).join(" | "),
+    risposte: steps.filter(s => !skip(s)).map(s => s.q + " → " + (answers[s.id]==="na" ? s.o[s.na] : s.o[answers[s.id]])).join(" | "),
   };
   console.log("Lead Falegnametro:", payload);
   const btn = $("leadBtn"); btn.disabled = true; btn.textContent = "Preparo il report…";
@@ -440,8 +446,9 @@ async function buildReport(){
     const v = scores[a.id];
     doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...INK); doc.text(a.name, 110, by);
     doc.setFillColor(...TINT); doc.roundedRect(150, by-2.6, 36, 3, 1.5, 1.5, "F");
-    if (v>0) { doc.setFillColor(...col(v)); doc.roundedRect(150, by-2.6, Math.max(3, 36*v/100), 3, 1.5, 1.5, "F"); }
-    doc.setFont("helvetica","bold"); doc.text(String(v), R, by, {align:"right"});
+    if (v === null) { doc.setFont("helvetica","italic"); doc.setFontSize(8); doc.setTextColor(...MUTED); doc.text("non valutata: non cerca nuovi clienti", 150, by); doc.setTextColor(...INK); doc.setFontSize(8.5); }
+    else if (v>0) { doc.setFillColor(...col(v)); doc.roundedRect(150, by-2.6, Math.max(3, 36*v/100), 3, 1.5, 1.5, "F"); }
+    doc.setFont("helvetica","bold"); doc.text(v===null ? "–" : String(v), R, by, {align:"right"});
     by += 6;
   });
   y = Math.max(y + ih, by) + 8;
