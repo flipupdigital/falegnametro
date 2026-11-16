@@ -200,7 +200,7 @@ const AREAS = [
     {q:"Oltre al welfare obbligatorio del contratto, offri qualcosa in più (premi, formazione, benefit)?", o:["No, solo il welfare obbligatorio","Qualcosa ogni tanto","Sì, alcune cose","Sì, un piano strutturato"]},
     {q:"I tuoi collaboratori restano nel tempo?", o:["No, c'è molto ricambio","Qualcuno se ne va","Quasi tutti restano","Sì, squadra stabile"]},
    ]},
-  {id:"mkt", name:"Marketing", na:"Non cerco nuovi clienti: ho già lavoro a sufficienza", tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
+  {id:"mkt", name:"Marketing", gate:{q:"Stai cercando nuovi clienti?", o:["Sì","No, ho già lavoro a sufficienza"]}, tip:"Fotografa bene ogni lavoro finito e pubblicalo con 2 righe di storia. Le recensioni Google sono il tuo miglior venditore: chiedile a ogni consegna.",
    qs:[
     {q:"Hai un sito internet aggiornato con i tuoi lavori?", o:["No","Sì, ma vecchio","Sì, abbastanza aggiornato","Sì, aggiornato e porta contatti"]},
     {q:"Pubblichi i tuoi lavori sui social?", o:["Mai","Ogni tanto","Almeno una volta al mese","Ogni settimana, con una strategia"]},
@@ -255,17 +255,19 @@ const PLANS = {
 /* ===== STATO ===== */
 const steps = [
   ...PROFILE.map(p => ({type:"profile", id:p.id, area:"Profilo", q:p.q, o:p.o})),
-  ...AREAS.flatMap(a => a.qs.map((qq,i) => ({type:"area", id:a.id+"_"+i, areaId:a.id, area:a.name, q:qq.q,
-    o: (i===0 && a.na) ? [...qq.o, a.na] : qq.o, na: (i===0 && a.na) ? qq.o.length : undefined}))),
+  ...AREAS.flatMap(a => [
+    ...(a.gate ? [{type:"gate", id:a.id+"_gate", areaId:a.id, area:a.name, q:a.gate.q, o:a.gate.o}] : []),
+    ...a.qs.map((qq,i) => ({type:"area", id:a.id+"_"+i, areaId:a.id, area:a.name, q:qq.q, o:qq.o})),
+  ]),
 ];
 const answers = {};
 let cur = 0;
 let results = null;
 
 const $ = id => document.getElementById(id);
-// "non valutata": chi non cerca clienti salta le altre domande di Marketing e l'area non conta nel punteggio
-const isNA = areaId => answers[areaId+"_0"] === "na";
-const skip = s => s.type==="area" && !s.id.endsWith("_0") && isNA(s.areaId);
+// "non valutata": chi non cerca clienti salta le domande di Marketing e l'area non conta nel punteggio
+const isNA = areaId => answers[areaId+"_gate"] === 1;
+const skip = s => s.type==="area" && isNA(s.areaId);
 
 function start(){ $("intro").classList.add("hidden"); $("quiz").classList.remove("hidden"); render(); }
 
@@ -280,9 +282,9 @@ function render(){
   const box = $("options"); box.innerHTML = "";
   s.o.forEach((txt,i) => {
     const b = document.createElement("button");
-    b.className = "opt" + ((answers[s.id]===i || (answers[s.id]==="na" && s.na===i)) ? " sel" : "");
+    b.className = "opt" + (answers[s.id]===i ? " sel" : "");
     b.textContent = txt;
-    b.onclick = () => { answers[s.id] = (s.na===i) ? "na" : i; b.classList.add("sel"); setTimeout(next, 180); };
+    b.onclick = () => { answers[s.id]=i; b.classList.add("sel"); setTimeout(next, 180); };
     box.appendChild(b);
   });
 }
@@ -371,7 +373,7 @@ async function sendLead(e){
     cerca_clienti: isNA("mkt") ? "NO" : "SI",
     ...Object.fromEntries(AREAS.map(a => ["score_"+a.id, scores[a.id] ?? "n.v."])),
     tags: ["falegnametro", ...prios.map(p => "falegnametro_"+p.id+"_basso"), ...(answers.rilievi_0 <= 1 ? ["falegnametro_rilievi_manuali"] : [])].join(", "),
-    risposte: steps.filter(s => !skip(s)).map(s => s.q + " → " + (answers[s.id]==="na" ? s.o[s.na] : s.o[answers[s.id]])).join(" | "),
+    risposte: steps.filter(s => !skip(s)).map(s => s.q + " → " + s.o[answers[s.id]]).join(" | "),
   };
   console.log("Lead Falegnametro:", payload);
   const btn = $("leadBtn"); btn.disabled = true; btn.textContent = "Preparo il report…";
